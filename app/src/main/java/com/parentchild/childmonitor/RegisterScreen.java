@@ -1,6 +1,7 @@
 package com.parentchild.childmonitor;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -40,7 +41,6 @@ public class RegisterScreen extends AppCompatActivity {
         pass_field = findViewById(R.id.reg_pass);
         reg_btn = findViewById(R.id.reg_btn);
         confirm_pass_field = findViewById(R.id.reg_confirm_pass);
-        pass_field = findViewById(R.id.reg_pass);
 
         reg_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,6 +60,12 @@ public class RegisterScreen extends AppCompatActivity {
                             ref.child(uid).setValue(um).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
+                                    SharedPreferences sharedPreferences = getSharedPreferences("ChildMonitor",MODE_PRIVATE);
+
+                                    SharedPreferences.Editor data = sharedPreferences.edit();
+
+                                    data.putString("parentName", name);
+                                    data.commit();
                                     Toast.makeText(RegisterScreen.this, "Registered !", Toast.LENGTH_SHORT).show();
                                   startActivity(new Intent(RegisterScreen.this, MainActivity3.class));
                                 }
@@ -80,21 +86,19 @@ public class RegisterScreen extends AppCompatActivity {
 
     }
 
-    boolean isValid(String email, String pass, String confirm_pass){
-        if(pass.length() < 6 ){
+    boolean isValid(String email, String pass, String confirm_pass) {
+        if (pass.length() < 6) {
             pass_field.setError("Password should be atleast of 6 characters");
             return false;
         }
-        else if(pass != confirm_pass){
+        if (!(pass.equals(confirm_pass))) {
             confirm_pass_field.setError("The password should be same as the previous password");
             return false;
         }
-        else if(!email.contains("@")){
+        if (!email.contains("@")) {
             email_field.setError("Email is invalid");
             return false;
         }
-        else{
-            return true;
-        }
+        return true;
     }
 }
